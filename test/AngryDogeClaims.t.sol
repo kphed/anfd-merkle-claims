@@ -10,7 +10,7 @@ contract AngryDogeClaimsTest is Test {
     ERC20 private constant ANFD =
         ERC20(0x4F14cDBd815B79E9624121f564f24685c6B1211b);
 
-    // Randomly-selected address from the ANFD claims address for testing purposes
+    // Randomly-selected address from the ANFD claims address list for testing purposes
     address private constant CLAIMER =
         0x0000000000007F150Bd6f54c40A34d7C3d5e9f56;
 
@@ -21,6 +21,7 @@ contract AngryDogeClaimsTest is Test {
     AngryDogeClaims private immutable claims;
 
     bytes32[] private claimerProof = [
+        // Bytes32 type not inferred so we need to explicitly cast the values
         bytes32(
             0x563af0d9d7ad292d314728bbe4b8a9a4a70b940cea2616786655c438754c6e93
         ),

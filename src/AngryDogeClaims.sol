@@ -6,7 +6,7 @@ import {SafeTransferLib} from "solmate/utils/SafeTransferLib.sol";
 import {MerkleProofLib} from "solmate/utils/MerkleProofLib.sol";
 
 /**
- * @title  ANFD claims using a merkle tree-based system
+ * @title  ANFD claims
  * @author kphed (GitHub) / ppmoon69 (Twitter)
  */
 contract AngryDogeClaims {
@@ -41,7 +41,7 @@ contract AngryDogeClaims {
 
     /**
      * @notice Claim ANFD tokens
-     * @param  proof   bytes32[]  Merkle proof
+     * @param  proof  bytes32[]  Merkle proof
      */
     function claim(bytes32[] calldata proof) external {
         // Revert if proof is empty
@@ -62,7 +62,7 @@ contract AngryDogeClaims {
             )
         ) revert InvalidProof();
 
-        // Set claimed to true to prevent double claiming
+        // Set claimer's claim status to true to prevent double claiming
         claimed[msg.sender] = true;
 
         // Transfer ANFD tokens to the claimer (last to avoid reentrancy)
