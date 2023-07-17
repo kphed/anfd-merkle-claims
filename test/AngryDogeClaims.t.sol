@@ -122,7 +122,6 @@ contract AngryDogeClaimsTest is Test {
         // Ensure that `withdraw` is called by the owner account
         vm.prank(owner);
 
-        // Solmate uses a `require` statement with a string error msg
         vm.expectEmit(true, false, false, true, address(claims));
 
         emit Withdraw(owner, contractBalanceBeforeWithdrawal);
