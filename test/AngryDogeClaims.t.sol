@@ -78,9 +78,13 @@ contract AngryDogeClaimsTest is Test {
     event Claim(address indexed claimer);
 
     constructor() {
-        claims = new AngryDogeClaims(
-            0xba3bbb0c37381d1de79f9c7efbb117cda807fbf830e68fc4eacb228421cfa78b
-        );
+        bytes32 merkleRoot = 0xba3bbb0c37381d1de79f9c7efbb117cda807fbf830e68fc4eacb228421cfa78b;
+        address owner = address(this);
+
+        claims = new AngryDogeClaims(merkleRoot, owner);
+
+        assertEq(merkleRoot, claims.merkleRoot());
+        assertEq(owner, claims.owner());
 
         // Impersonate the ANFD token source and transfer ANFD balance to the claims contract
         uint256 transferAmount = ANFD.balanceOf(ANFD_TOKEN_SOURCE);
@@ -89,6 +93,10 @@ contract AngryDogeClaimsTest is Test {
 
         ANFD.transfer(address(claims), transferAmount);
     }
+
+    /*//////////////////////////////////////////////////////////////
+                             claim
+    //////////////////////////////////////////////////////////////*/
 
     function testCannotClaimEmptyProof() external {
         bytes32[] memory proof = new bytes32[](0);

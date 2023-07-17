@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.20;
 
+import {Owned} from "solmate/auth/Owned.sol";
 import {ERC20} from "solmate/tokens/ERC20.sol";
 import {SafeTransferLib} from "solmate/utils/SafeTransferLib.sol";
 import {MerkleProofLib} from "solmate/utils/MerkleProofLib.sol";
@@ -9,7 +10,7 @@ import {MerkleProofLib} from "solmate/utils/MerkleProofLib.sol";
  * @title  ANFD claims
  * @author kphed (GitHub) / ppmoon69 (Twitter)
  */
-contract AngryDogeClaims {
+contract AngryDogeClaims is Owned {
     using SafeTransferLib for ERC20;
 
     // ANFD token contract
@@ -29,12 +30,14 @@ contract AngryDogeClaims {
     event Claim(address indexed claimer);
 
     error EmptyMerkleRoot();
+    error InvalidOwnerAddress();
     error EmptyProof();
     error InvalidProof();
     error AlreadyClaimed();
 
-    constructor(bytes32 _merkleRoot) {
+    constructor(bytes32 _merkleRoot, address _owner) Owned(_owner) {
         if (_merkleRoot == bytes32(0)) revert EmptyMerkleRoot();
+        if (_owner == address(0)) revert InvalidOwnerAddress();
 
         merkleRoot = _merkleRoot;
     }
