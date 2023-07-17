@@ -75,6 +75,7 @@ contract AngryDogeClaimsTest is Test {
         )
     ];
 
+    event Withdraw(address indexed withdrawer, uint256 withdrawAmount);
     event Claim(address indexed claimer);
 
     constructor() {
@@ -92,6 +93,50 @@ contract AngryDogeClaimsTest is Test {
         vm.prank(ANFD_TOKEN_SOURCE);
 
         ANFD.transfer(address(claims), transferAmount);
+    }
+
+    /*//////////////////////////////////////////////////////////////
+                             withdraw
+    //////////////////////////////////////////////////////////////*/
+
+    function testCannotWithdrawUnauthorized() external {
+        address unauthorizedMsgSender = address(1);
+
+        assertTrue(unauthorizedMsgSender != claims.owner());
+
+        vm.prank(unauthorizedMsgSender);
+
+        // Solmate uses a `require` statement with a string error msg
+        vm.expectRevert("UNAUTHORIZED");
+
+        claims.withdraw();
+    }
+
+    function testWithdraw() external {
+        address owner = claims.owner();
+        uint256 contractBalanceBeforeWithdrawal = ANFD.balanceOf(
+            address(claims)
+        );
+        uint256 ownerBalanceBeforeWithdrawal = ANFD.balanceOf(owner);
+
+        // Ensure that `withdraw` is called by the owner account
+        vm.prank(owner);
+
+        // Solmate uses a `require` statement with a string error msg
+        vm.expectEmit(true, false, false, true, address(claims));
+
+        emit Withdraw(owner, contractBalanceBeforeWithdrawal);
+
+        claims.withdraw();
+
+        // The contract should no longer have an ANFD balance (i.e. zero)
+        assertEq(0, ANFD.balanceOf(address(claims)));
+
+        assertEq(
+            // Owner should receive the entire ANFD balance of the contract
+            ownerBalanceBeforeWithdrawal + contractBalanceBeforeWithdrawal,
+            ANFD.balanceOf(owner)
+        );
     }
 
     /*//////////////////////////////////////////////////////////////

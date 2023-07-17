@@ -27,6 +27,7 @@ contract AngryDogeClaims is Owned {
     // Mapping of claimer addresses and their claim status
     mapping(address => bool) public claimed;
 
+    event Withdraw(address indexed withdrawer, uint256 withdrawAmount);
     event Claim(address indexed claimer);
 
     error EmptyMerkleRoot();
@@ -40,6 +41,20 @@ contract AngryDogeClaims is Owned {
         if (_owner == address(0)) revert InvalidOwnerAddress();
 
         merkleRoot = _merkleRoot;
+    }
+
+    /**
+     * @notice Withdraw ANFD tokens to the owner account.
+     * @dev    The `onlyOwner` modifier checks that `msg.sender` == `owner`
+     */
+    function withdraw() external onlyOwner {
+        // Store balance in a variable which will be emitted in the event
+        uint256 withdrawAmount = ANFD.balanceOf(address(this));
+
+        // Transfer the contract's ANFD balance to the owner
+        ANFD.safeTransfer(msg.sender, withdrawAmount);
+
+        emit Withdraw(msg.sender, withdrawAmount);
     }
 
     /**
